@@ -18,10 +18,16 @@ end
 ```elixir
 iex> {:ok, phone_number} = ExPhoneNumber.parse("044 668 18 00", "CH")
 {:ok,
- %ExPhoneNumber.Model.PhoneNumber{country_code: 41, country_code_source: nil,
-  extension: nil, italian_leading_zero: nil, national_number: 446681800,
-  number_of_leading_zeros: nil, preferred_domestic_carrier_code: nil,
-  raw_input: nil}}
+ %ExPhoneNumber.Model.PhoneNumber{
+   country_code: 41,
+   country_code_source: nil,
+   extension: nil,
+   italian_leading_zero: nil,
+   national_number: 446681800,
+   number_of_leading_zeros: nil,
+   preferred_domestic_carrier_code: nil,
+   raw_input: nil
+}}
 
 iex> ExPhoneNumber.is_possible_number?(phone_number)
 true
