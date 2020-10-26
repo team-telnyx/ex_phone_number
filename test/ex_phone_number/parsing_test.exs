@@ -3,7 +3,7 @@ defmodule ExPhoneNumber.ParsingTest do
 
   doctest ExPhoneNumber.Parsing
   import ExPhoneNumber.Parsing
-  alias PhoneNumberFixture
+  alias ExPhoneNumber.{PhoneNumberFixture, RegionCodeFixture}
   alias ExPhoneNumber.Constants.ErrorMessages
 
   describe ".is_possible_number?/2" do

@@ -5,8 +5,7 @@ defmodule ExPhoneNumber.MetadataTest do
   import ExPhoneNumber.Metadata
   alias ExPhoneNumber.Constants.Values
   alias ExPhoneNumber.Metadata.PhoneMetadata
-  alias PhoneNumberFixture
-  alias RegionCodeFixture
+  alias ExPhoneNumber.{PhoneNumberFixture, RegionCodeFixture}
 
   describe ".get_for_region_code/1" do
     context "US region_code" do

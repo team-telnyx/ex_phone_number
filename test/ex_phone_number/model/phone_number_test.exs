@@ -3,7 +3,7 @@ defmodule ExPhoneNumber.Model.PhoneNumberTest do
 
   doctest ExPhoneNumber.Model.PhoneNumber
   import ExPhoneNumber.Model.PhoneNumber
-  import PhoneNumberFixture
+  import ExPhoneNumber.PhoneNumberFixture
 
   describe ".get_national_significant_number/1" do
     context "US number" do

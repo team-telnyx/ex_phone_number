@@ -1,4 +1,6 @@
-defmodule RegionCodeFixture do
+defmodule ExPhoneNumber.RegionCodeFixture do
+  @moduledoc false
+
   def un001(), do: "001"
   def ad(), do: "AD"
   def ae(), do: "AE"

@@ -1,4 +1,8 @@
-defmodule PhoneNumberFixture do
+defmodule ExPhoneNumber.PhoneNumberFixture do
+  @moduledoc """
+  `%ExPhoneNumber.PhoneNumber{}` fixtures
+  """
+
   alias ExPhoneNumber.Model.PhoneNumber
 
   def alpha_numeric_number() do
@@ -44,6 +48,13 @@ defmodule PhoneNumberFixture do
     }
   end
 
+  def ar_mobile4() do
+    %PhoneNumber{
+      country_code: 54,
+      national_number: 92_234_654_321
+    }
+  end
+
   def ar_number() do
     %PhoneNumber{
       country_code: 54,
@@ -76,6 +87,14 @@ defmodule PhoneNumberFixture do
     %PhoneNumber{
       country_code: 54,
       national_number: 81_429_712
+    }
+  end
+
+  def ar_number6() do
+    %PhoneNumber{
+      country_code: 54,
+      national_number: 91_234_125_678,
+      preferred_domestic_carrier_code: 19
     }
   end
 
@@ -231,6 +250,10 @@ defmodule PhoneNumberFixture do
       country_code: 49,
       national_number: 1234
     }
+  end
+
+  def empty_number() do
+    %PhoneNumber{}
   end
 
   def gb_mobile() do
@@ -517,13 +540,6 @@ defmodule PhoneNumberFixture do
     }
   end
 
-  def us_number2() do
-    %PhoneNumber{
-      country_code: 1,
-      national_number: 1_234_567_890
-    }
-  end
-
   def us_long_number() do
     %PhoneNumber{
       country_code: 1,
@@ -535,6 +551,21 @@ defmodule PhoneNumberFixture do
     %PhoneNumber{
       country_code: 1,
       national_number: 6_502_530_000
+    }
+  end
+
+  def us_number2() do
+    %PhoneNumber{
+      country_code: 1,
+      national_number: 1_234_567_890
+    }
+  end
+
+  def us_number3() do
+    %PhoneNumber{
+      country_code: 1,
+      national_number: 4_241_231_234,
+      preferred_domestic_carrier_code: 99
     }
   end
 
@@ -591,16 +622,38 @@ defmodule PhoneNumberFixture do
   def us_number_with_extension() do
     %PhoneNumber{
       country_code: 1,
-      national_number: 2_121_231_234,
-      extension: "508"
+      national_number: 8_009_013_355,
+      extension: "7246433"
     }
   end
 
   def us_number_with_extension2() do
     %PhoneNumber{
       country_code: 1,
+      national_number: 2_121_231_234,
+      extension: "508"
+    }
+  end
+
+  def us_number_with_extension3() do
+    %PhoneNumber{
+      country_code: 1,
       national_number: 6_451_231_234,
       extension: "910"
+    }
+  end
+
+  def uz_fixed_line() do
+    %PhoneNumber{
+      country_code: 998,
+      national_number: 612_201_234
+    }
+  end
+
+  def uz_mobile() do
+    %PhoneNumber{
+      country_code: 998,
+      national_number: 950_123_456
     }
   end
 
@@ -653,10 +706,35 @@ defmodule PhoneNumberFixture do
     }
   end
 
+  def unknown_country_code3() do
+    %PhoneNumber{
+      country_code: 0,
+      national_number: 2_530_000
+    }
+  end
+
   def unknown_country_code_no_raw_input() do
     %PhoneNumber{
       country_code: 2,
-      national_number: 12345
+      national_number: 12_345
+    }
+  end
+
+  def too_many_zeros1() do
+    %PhoneNumber{
+      country_code: 1,
+      national_number: 650,
+      italian_leading_zero: true,
+      number_of_leading_zeros: 2
+    }
+  end
+
+  def too_many_zeros2() do
+    %PhoneNumber{
+      country_code: 1,
+      national_number: 650,
+      italian_leading_zero: true,
+      number_of_leading_zeros: -3
     }
   end
 end

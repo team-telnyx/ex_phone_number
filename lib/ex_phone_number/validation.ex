@@ -74,7 +74,9 @@ defmodule ExPhoneNumber.Validation do
     number_type = get_number_type(phone_number)
 
     number_type == PhoneNumberTypes.fixed_line() or
-      number_type == PhoneNumberTypes.fixed_line_or_mobile()
+      number_type == PhoneNumberTypes.fixed_line_or_mobile() or
+      (Enum.member?(Values.geo_mobile_countries(), phone_number.country_code) and
+         number_type == PhoneNumberTypes.mobile())
   end
 
   def is_possible_number?(%PhoneNumber{} = number) do

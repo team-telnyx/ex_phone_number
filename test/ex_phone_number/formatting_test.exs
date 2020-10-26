@@ -4,7 +4,7 @@ defmodule ExPhoneNumber.FormattingTest do
   doctest ExPhoneNumber.Formatting
   import ExPhoneNumber.Formatting
   alias ExPhoneNumber.Constants.PhoneNumberFormats
-  alias PhoneNumberFixture
+  alias ExPhoneNumber.{PhoneNumberFixture, RegionCodeFixture}
 
   describe ".format/2" do
     context "US number" do
