@@ -62,7 +62,7 @@ defmodule ExPhoneNumber.Constants.Patterns do
       "|" <>
       "[ \u00A0\\t,]*" <>
       "(?:e?xt(?:ensi(?:o\u0301?|\u00F3))?n?|\uFF45?\uFF58\uFF54\uFF4E?|" <>
-      "[,x\uFF58#\uFF03~\uFF5E]|int|anexo|\uFF49\uFF4E\uFF54)" <>
+      "[;,x\uFF58#\uFF03~\uFF5E]|int|anexo|\uFF49\uFF4E\uFF54)" <>
       "[:\\.\uFF0E]?[ \u00A0\\t,-]*" <>
       capturing_extn_digits() <>
       "#?|" <>
