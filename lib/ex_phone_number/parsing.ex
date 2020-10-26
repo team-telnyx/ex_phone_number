@@ -162,7 +162,7 @@ defmodule ExPhoneNumber.Parsing do
                    else: normalized_national_number
 
               phone_number =
-                if keep_raw_input,
+                if keep_raw_input and String.length(carrier_code) > 0,
                   do: %{phone_number | preferred_domestic_carrier_code: carrier_code},
                   else: phone_number
 
