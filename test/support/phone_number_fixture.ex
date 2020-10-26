@@ -20,6 +20,13 @@ defmodule ExPhoneNumber.PhoneNumberFixture do
     }
   end
 
+  def ad_number() do
+    %PhoneNumber{
+      country_code: 376,
+      national_number: 12345
+    }
+  end
+
   def ae_uan() do
     %PhoneNumber{
       country_code: 971,
