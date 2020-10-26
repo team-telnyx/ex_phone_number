@@ -26,6 +26,10 @@ defmodule ExPhoneNumber.Normalization do
     normalize_helper(number, Mappings.digit_mappings(), true)
   end
 
+  def normalize_diallable_chars_only(number) do
+    normalize_helper(number, Mappings.diallable_char_mappings(), true)
+  end
+
   def normalize_helper(number, normalization_replacements, remove_non_matches)
       when is_binary(number) and is_map(normalization_replacements) and
              is_boolean(remove_non_matches) do

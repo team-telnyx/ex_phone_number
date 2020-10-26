@@ -89,7 +89,8 @@ defmodule ExPhoneNumber.Constants.Mappings do
       "8" => "8",
       "9" => "9",
       "+" => Values.plus_sign(),
-      "*" => "*"
+      "*" => "*",
+      "#" => "#"
     }
   end
 
