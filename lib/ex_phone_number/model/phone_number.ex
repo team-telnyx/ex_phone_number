@@ -1,4 +1,7 @@
 defmodule ExPhoneNumber.Model.PhoneNumber do
+  @moduledoc """
+  PhoneNumber module.
+  """
   # number
   defstruct country_code: nil,
             # number
@@ -77,16 +80,24 @@ defmodule ExPhoneNumber.Model.PhoneNumber do
         ""
       end
 
-    if has_italian_leading_zero?(phone_number) and phone_number.italian_leading_zero do
+    if has_italian_leading_zero?(phone_number) and
+         phone_number.italian_leading_zero and
+         get_number_of_leading_zeros_or_default(phone_number) > 0 do
       upper_bound = get_number_of_leading_zeros_or_default(phone_number)
       prefix = for _x <- 1..upper_bound, do: "0"
       List.to_string(prefix) <> Integer.to_string(national_number)
     else
-      Integer.to_string(national_number)
+      case national_number do
+        "" ->
+          ""
+
+        _ ->
+          Integer.to_string(national_number)
+      end
     end
   end
 
-  def set_italian_leading_zeros(national_number, %PhoneNumber{} = phone_number) do
+  def set_italian_leading_zeros(phone_number = %PhoneNumber{}, national_number) do
     if String.length(national_number) > 1 and String.at(national_number, 0) == "0" do
       phone_number = %{phone_number | italian_leading_zero: true}
 

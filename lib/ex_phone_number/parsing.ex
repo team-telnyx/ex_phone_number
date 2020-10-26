@@ -190,7 +190,7 @@ defmodule ExPhoneNumber.Parsing do
             {:error, ErrorMessages.too_long()}
 
           true ->
-            phone_number_add = PhoneNumber.set_italian_leading_zeros(normalized_national_number, phone_number)
+            phone_number_add = PhoneNumber.set_italian_leading_zeros(phone_number, normalized_national_number)
 
             case Integer.parse(normalized_national_number) do
               {int, _} ->
