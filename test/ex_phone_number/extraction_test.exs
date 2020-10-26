@@ -6,7 +6,7 @@ defmodule ExPhoneNumber.ExtractionTest do
   alias ExPhoneNumber.Metadata
   alias ExPhoneNumber.Constants.CountryCodeSource
   alias ExPhoneNumber.Constants.ErrorMessages
-  alias ExPhoneNumber.{PhoneNumberFixture, RegionCodeFixture}
+  alias ExPhoneNumber.RegionCodeFixture
 
   describe ".extract_possible_number/1" do
     context "removes preceding funky punctuation and letters" do
