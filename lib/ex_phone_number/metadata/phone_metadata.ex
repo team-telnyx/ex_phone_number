@@ -62,6 +62,7 @@ defmodule ExPhoneNumber.Metadata.PhoneMetadata do
 
   import SweetXml
   import ExPhoneNumber.Utilities
+  alias ExPhoneNumber.Constants.PhoneNumberTypes
   alias ExPhoneNumber.Constants.Values
   alias ExPhoneNumber.Metadata.NumberFormat
   alias ExPhoneNumber.Metadata.PhoneMetadata
@@ -510,6 +511,36 @@ defmodule ExPhoneNumber.Metadata.PhoneMetadata do
     else
       nil
     end
+  end
+
+  @doc """
+  i18n.phonenumbers.PhoneNumberUtil.getSupportedTypesForMetadata_
+  """
+  @spec get_supported_types(%PhoneMetadata{}) :: [] | [atom()]
+  def get_supported_types(%PhoneMetadata{} = metadata) do
+    types = []
+
+    types = types ++ if PhoneNumberDescription.has_data?(metadata.fixed_line), do: [PhoneNumberTypes.fixed_line()], else: []
+
+    types = types ++ if PhoneNumberDescription.has_data?(metadata.mobile), do: [PhoneNumberTypes.mobile()], else: []
+
+    types = types ++ if PhoneNumberDescription.has_data?(metadata.toll_free), do: [PhoneNumberTypes.toll_free()], else: []
+
+    types = types ++ if PhoneNumberDescription.has_data?(metadata.premium_rate), do: [PhoneNumberTypes.premium_rate()], else: []
+
+    types = types ++ if PhoneNumberDescription.has_data?(metadata.shared_cost), do: [PhoneNumberTypes.shared_cost()], else: []
+
+    types = types ++ if PhoneNumberDescription.has_data?(metadata.voip), do: [PhoneNumberTypes.voip()], else: []
+
+    types = types ++ if PhoneNumberDescription.has_data?(metadata.personal_number), do: [PhoneNumberTypes.personal_number()], else: []
+
+    types = types ++ if PhoneNumberDescription.has_data?(metadata.pager), do: [PhoneNumberTypes.pager()], else: []
+
+    types = types ++ if PhoneNumberDescription.has_data?(metadata.uan), do: [PhoneNumberTypes.uan()], else: []
+
+    types = types ++ if PhoneNumberDescription.has_data?(metadata.voicemail), do: [PhoneNumberTypes.voicemail()], else: []
+
+    types
   end
 
   def destructure_to_number_format([]), do: []

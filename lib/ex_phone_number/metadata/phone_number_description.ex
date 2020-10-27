@@ -82,4 +82,29 @@ defmodule ExPhoneNumber.Metadata.PhoneNumberDescription do
         String.to_integer(range_or_number)
     end
   end
+
+  @spec has_data?(%PhoneNumberDescription{}) :: boolean()
+  def has_data?(%PhoneNumberDescription{
+        example_number: example_number
+      })
+      when is_binary(example_number) do
+    true
+  end
+
+  def has_data?(%PhoneNumberDescription{
+        national_number_pattern: %Regex{} = _national_number_pattern
+      }) do
+    true
+  end
+
+  def has_data?(%PhoneNumberDescription{
+        possible_lengths: possible_lengths
+      })
+      when is_list(possible_lengths) do
+    List.first(possible_lengths) > 0
+  end
+
+  def has_data?(%PhoneNumberDescription{}) do
+    false
+  end
 end

@@ -65,6 +65,7 @@ defmodule ExPhoneNumber.Metadata do
       Map.put(acc, Atom.to_string(key), Keyword.get(list_rctm, key))
     end)
 
+  @spec region_code_to_metadata_map() :: %{String.t() => %PhoneMetadata{}}
   defp region_code_to_metadata_map() do
     unquote(Macro.escape(map_rctm))
   end
@@ -98,6 +99,7 @@ defmodule ExPhoneNumber.Metadata do
     get_for_region_code(region_code)
   end
 
+  @spec get_for_region_code(String.t() | nil) :: %PhoneMetadata{}
   def get_for_region_code(nil), do: nil
 
   def get_for_region_code(region_code) do
@@ -195,6 +197,15 @@ defmodule ExPhoneNumber.Metadata do
     end)
   end
 
+  @doc """
+  i18n.phonenumbers.PhoneNumberUtil.prototype.getSupportedCallingCodes
+  """
+  @spec get_supported_calling_codes() :: list()
+  def get_supported_calling_codes() do
+    get_supported_global_network_calling_codes() ++
+      Map.keys(country_code_to_region_code_map())
+  end
+
   def get_supported_global_network_calling_codes() do
     region_codes_as_strings =
       Enum.filter(Map.keys(region_code_to_metadata_map()), fn key ->
@@ -205,6 +216,20 @@ defmodule ExPhoneNumber.Metadata do
       {number, _} = Integer.parse(calling_code)
       number
     end)
+  end
+
+  @doc """
+  i18n.phonenumbers.PhoneNumberUtil.prototype.getSupportedTypesForRegion
+  """
+  @spec get_supported_types_for_region(String.t()) :: list()
+  def get_supported_types_for_region(region_code) do
+    if is_valid_region_code?(region_code) do
+      region_code
+      |> get_for_region_code()
+      |> PhoneMetadata.get_supported_types()
+    else
+      []
+    end
   end
 
   def is_nanpa_country?(nil), do: false
@@ -231,6 +256,7 @@ defmodule ExPhoneNumber.Metadata do
     not is_nil(country_code_to_region_code_map()[country_code])
   end
 
+  @spec is_valid_region_code?(String.t() | nil) :: map()
   def is_valid_region_code?(nil), do: false
 
   def is_valid_region_code?(region_code) when is_binary(region_code) do
