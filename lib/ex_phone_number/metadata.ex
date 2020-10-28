@@ -92,6 +92,7 @@ defmodule ExPhoneNumber.Metadata do
     end
   end
 
+  @spec get_for_non_geographical_region(integer() | String.t()) :: %PhoneMetadata{} | nil
   def get_for_non_geographical_region(calling_code) when is_number(calling_code),
     do: get_for_non_geographical_region(Integer.to_string(calling_code))
 
@@ -99,7 +100,7 @@ defmodule ExPhoneNumber.Metadata do
     get_for_region_code(region_code)
   end
 
-  @spec get_for_region_code(String.t() | nil) :: %PhoneMetadata{}
+  @spec get_for_region_code(String.t() | nil) :: %PhoneMetadata{} | nil
   def get_for_region_code(nil), do: nil
 
   def get_for_region_code(region_code) do
@@ -229,6 +230,20 @@ defmodule ExPhoneNumber.Metadata do
       |> PhoneMetadata.get_supported_types()
     else
       []
+    end
+  end
+
+  @doc """
+  i18n.phonenumbers.PhoneNumberUtil.prototype.getSupportedTypesForNonGeoEntity
+  """
+  @spec get_supported_types_for_non_geo_entity(String.t()) :: list(atom())
+  def get_supported_types_for_non_geo_entity(country_calling_code) do
+    metadata = get_for_non_geographical_region(country_calling_code)
+
+    if is_nil(metadata) do
+      []
+    else
+      PhoneMetadata.get_supported_types(metadata)
     end
   end
 
