@@ -1,514 +1,278 @@
 defmodule ExPhoneNumber.MetadataTest do
-  use ExSpec, async: true
+  use ExUnit.Case, async: true
 
   doctest ExPhoneNumber.Metadata
+
   import ExPhoneNumber.Metadata
+
+  alias ExPhoneNumber.Constants.PhoneNumberTypes
   alias ExPhoneNumber.Constants.Values
   alias ExPhoneNumber.Metadata.PhoneMetadata
   alias ExPhoneNumber.{PhoneNumberFixture, RegionCodeFixture}
 
-  describe ".get_for_region_code/1" do
-    context "US region_code" do
-      setup do
-        {:ok, us_metadata: get_for_region_code(RegionCodeFixture.us())}
-      end
+  setup_all do
+    [
+      us_metadata: get_for_region_code(RegionCodeFixture.us()),
+      de_metadata: get_for_region_code(RegionCodeFixture.de()),
+      ar_metadata: get_for_region_code(RegionCodeFixture.ar()),
+      un001_metadata: get_for_non_geographical_region(800)
+    ]
+  end
 
-      it "returns valid id", state do
-        assert RegionCodeFixture.us() == state[:us_metadata].id
-      end
-
-      it "returns valid country_code", state do
-        assert 1 == state[:us_metadata].country_code
-      end
-
-      it "returns valid international_prefix", state do
-        assert "011" == state[:us_metadata].international_prefix
-      end
-
-      it "returns valid has_national_prefix?", state do
-        assert PhoneMetadata.has_national_prefix?(state[:us_metadata])
-      end
-
-      it "returns valid number_format length", state do
-        assert 2 == length(state[:us_metadata].number_format)
-      end
-
-      it "returns valid number_format(1).pattern", state do
-        assert ~r/(\d{3})(\d{3})(\d{4})/ == Enum.at(state[:us_metadata].number_format, 1).pattern
-      end
-
-      it "returns valid number_format(1).format", state do
-        assert "\\g{1} \\g{2} \\g{3}" == Enum.at(state[:us_metadata].number_format, 1).format
-      end
-
-      it "returns valid general.national_number_pattern", state do
-        assert ~r/[13-689]\d{9}|2[0-35-9]\d{8}/ ==
-                 state[:us_metadata].general.national_number_pattern
-      end
-
-      it "returns valid general.possible_lengths", state do
-        assert [7, 10] == state[:us_metadata].general.possible_lengths
-      end
-
-      it "returns valid toll_free.possible_lengths", state do
-        assert [10] == state[:us_metadata].toll_free.possible_lengths
-      end
-
-      it "returns valid premium_rate.national_number_pattern", state do
-        assert ~r/900\d{7}/ == state[:us_metadata].premium_rate.national_number_pattern
-      end
-
-      it "returns valid shared_cost.national_number_pattern", state do
-        assert Values.description_default_pattern() ==
-                 state[:us_metadata].shared_cost.national_number_pattern
-      end
-
-      it "returns valid shared_cost.possible_lengths", state do
-        assert Values.description_default_length() ==
-                 state[:us_metadata].shared_cost.possible_lengths
-      end
+  describe "get_for_region_code/1" do
+    test "GetInstanceLoadUSMetadata", %{us_metadata: metadata} do
+      assert RegionCodeFixture.us() == metadata.id
+      assert 1 == metadata.country_code
+      assert "011" == metadata.international_prefix
+      assert PhoneMetadata.has_national_prefix?(metadata)
+      assert 2 == length(metadata.number_format)
+      assert ~r/(\d{3})(\d{3})(\d{4})/ == Enum.at(metadata.number_format, 1).pattern
+      assert "\\g{1} \\g{2} \\g{3}" == Enum.at(metadata.number_format, 1).format
+      assert ~r/[13-689]\d{9}|2[0-35-9]\d{8}/ == metadata.general.national_number_pattern
+      assert ~r/[13-689]\d{9}|2[0-35-9]\d{8}/ == metadata.fixed_line.national_number_pattern
+      assert ~r/900\d{7}/ == metadata.premium_rate.national_number_pattern
+      assert is_nil(metadata.shared_cost.national_number_pattern)
     end
 
-    context "DE region_code" do
-      setup do
-        {:ok, de_metadata: get_for_region_code(RegionCodeFixture.de())}
-      end
-
-      it "returns valid id", state do
-        assert RegionCodeFixture.de() == state[:de_metadata].id
-      end
-
-      it "returns valid country_code", state do
-        assert 49 == state[:de_metadata].country_code
-      end
-
-      it "returns valid international_prefix", state do
-        assert "00" == state[:de_metadata].international_prefix
-      end
-
-      it "returns valid national_prefix", state do
-        assert "0" == state[:de_metadata].national_prefix
-      end
-
-      it "returns valid number_format length", state do
-        assert 6 == length(state[:de_metadata].number_format)
-      end
-
-      it "returns valid number_format(5).leading_digits_pattern length", state do
-        assert 1 == length(Enum.at(state[:de_metadata].number_format, 5).leading_digits_pattern)
-      end
-
-      it "returns valid number_format(5).leading_digits_pattern(0)", state do
-        assert ~r/900/ ==
-                 Enum.at(Enum.at(state[:de_metadata].number_format, 5).leading_digits_pattern, 0)
-      end
-
-      it "returns valid number_format(5).pattern", state do
-        assert ~r/(\d{3})(\d{3,4})(\d{4})/ ==
-                 Enum.at(state[:de_metadata].number_format, 5).pattern
-      end
-
-      it "returns valid number_format(5).format", state do
-        assert "\\g{1} \\g{2} \\g{3}" == Enum.at(state[:de_metadata].number_format, 5).format
-      end
-
-      it "returns valid fixed_line.national_number_pattern", state do
-        assert ~r/(?:[24-6]\d{2}|3[03-9]\d|[789](?:0[2-9]|[1-9]\d))\d{1,8}/ ==
-                 state[:de_metadata].fixed_line.national_number_pattern
-      end
-
-      it "returns valid fixed_line.possible_lengths", state do
-        assert Enum.to_list(2..11) == state[:de_metadata].fixed_line.possible_lengths
-      end
-
-      it "returns valid fixed_line.example_number", state do
-        assert "30123456" == state[:de_metadata].fixed_line.example_number
-      end
-
-      it "returns valid toll_free.possible_lengths", state do
-        assert [10] == state[:de_metadata].toll_free.possible_lengths
-      end
-
-      it "returns valid premium_rate.national_number_pattern", state do
-        assert ~r/900([135]\d{6}|9\d{7})/ ==
-                 state[:de_metadata].premium_rate.national_number_pattern
-      end
+    test "GetInstanceLoadDEMetadata", %{de_metadata: metadata} do
+      assert RegionCodeFixture.de() == metadata.id
+      assert 49 == metadata.country_code
+      assert "00" == metadata.international_prefix
+      assert "0" == metadata.national_prefix
+      assert 6 == length(metadata.number_format)
+      assert 1 == length(Enum.at(metadata.number_format, 5).leading_digits_pattern)
+      assert ~r/900/ == Enum.at(Enum.at(metadata.number_format, 5).leading_digits_pattern, 0)
+      assert ~r/(\d{3})(\d{3,4})(\d{4})/ == Enum.at(metadata.number_format, 5).pattern
+      assert "\\g{1} \\g{2} \\g{3}" == Enum.at(metadata.number_format, 5).format
+      assert ~r/(?:[24-6]\d{2}|3[03-9]\d|[789](?:0[2-9]|[1-9]\d))\d{1,8}/ == metadata.fixed_line.national_number_pattern
+      assert "30123456" == metadata.fixed_line.example_number
+      assert ~r/900([135]\d{6}|9\d{7})/ == metadata.premium_rate.national_number_pattern
     end
 
-    context "AR region_code" do
-      setup do
-        {:ok, ar_metadata: get_for_region_code(RegionCodeFixture.ar())}
-      end
+    test "GetInstanceLoadARMetadata", %{ar_metadata: metadata} do
+      assert RegionCodeFixture.ar() == metadata.id
+      assert 54 == metadata.country_code
+      assert "00" == metadata.international_prefix
+      assert "0" == metadata.national_prefix
+      assert "0(?:(11|343|3715)15)?" == metadata.national_prefix_for_parsing
+      assert "9\\g{1}" == metadata.national_prefix_transform_rule
+      assert "\\g{2} 15 \\g{3}-\\g{4}" == Enum.at(metadata.number_format, 2).format
+      assert ~r/(\d)(\d{4})(\d{2})(\d{4})/ == Enum.at(metadata.number_format, 3).pattern
+      assert ~r/(\d)(\d{4})(\d{2})(\d{4})/ == Enum.at(metadata.intl_number_format, 3).pattern
+      assert "\\g{1} \\g{2} \\g{3} \\g{4}" == Enum.at(metadata.intl_number_format, 3).format
+    end
 
-      it "returns valid id", state do
-        assert RegionCodeFixture.ar() == state[:ar_metadata].id
-      end
+    test "US region_code returns valid general.possible_lengths", %{us_metadata: metadata} do
+      assert [7, 10] == metadata.general.possible_lengths
+    end
 
-      it "returns valid country_code", state do
-        assert 54 == state[:ar_metadata].country_code
-      end
+    test "US region_code returns valid toll_free.possible_lengths", %{us_metadata: metadata} do
+      assert [10] == metadata.toll_free.possible_lengths
+    end
 
-      it "returns valid international_prefix", state do
-        assert "00" == state[:ar_metadata].international_prefix
-      end
+    test "US region_code returns valid shared_cost.national_number_pattern", %{us_metadata: metadata} do
+      assert Values.description_default_pattern() == metadata.shared_cost.national_number_pattern
+    end
 
-      it "returns valid national_prefix", state do
-        assert "0" == state[:ar_metadata].national_prefix
-      end
+    test "US region_code returns valid shared_cost.possible_lengths", %{us_metadata: metadata} do
+      assert Values.description_default_length() == metadata.shared_cost.possible_lengths
+    end
 
-      it "returns valid national_prefix_for_parsing", state do
-        assert "0(?:(11|343|3715)15)?" == state[:ar_metadata].national_prefix_for_parsing
-      end
+    test "DE region_code returns valid fixed_line.possible_lengths", %{de_metadata: metadata} do
+      assert Enum.to_list(2..11) == metadata.fixed_line.possible_lengths
+    end
 
-      it "returns valid national_prefix_transform_rule", state do
-        assert "9\\g{1}" == state[:ar_metadata].national_prefix_transform_rule
-      end
-
-      it "returns valid number_format(2).format", state do
-        assert "\\g{2} 15 \\g{3}-\\g{4}" == Enum.at(state[:ar_metadata].number_format, 2).format
-      end
-
-      it "returns valid number_format(3).pattern", state do
-        assert ~r/(\d)(\d{4})(\d{2})(\d{4})/ ==
-                 Enum.at(state[:ar_metadata].number_format, 3).pattern
-      end
-
-      it "returns valid intl_number_format(3).pattern", state do
-        assert ~r/(\d)(\d{4})(\d{2})(\d{4})/ ==
-                 Enum.at(state[:ar_metadata].intl_number_format, 3).pattern
-      end
-
-      it "returns valid intl_number_format(3).format", state do
-        assert "\\g{1} \\g{2} \\g{3} \\g{4}" ==
-                 Enum.at(state[:ar_metadata].intl_number_format, 3).format
-      end
+    test "DE region_code returns valid toll_free.possible_lengths", %{de_metadata: metadata} do
+      assert [10] == metadata.toll_free.possible_lengths
     end
   end
 
-  describe ".get_for_non_geographical_region/1" do
-    context "800 calling code" do
-      setup do
-        {:ok, un001_metadata: get_for_non_geographical_region(800)}
-      end
-
-      it "returns valid id", state do
-        assert RegionCodeFixture.un001() == state[:un001_metadata].id
-      end
-
-      it "returns valid country_code", state do
-        assert 800 == state[:un001_metadata].country_code
-      end
-
-      it "returns valid number_format(0).format", state do
-        assert "\\g{1} \\g{2}" == Enum.at(state[:un001_metadata].number_format, 0).format
-      end
-
-      it "returns valid number_format(0).pattern", state do
-        assert ~r/(\d{4})(\d{4})/ == Enum.at(state[:un001_metadata].number_format, 0).pattern
-      end
-
-      it "returns valid toll_free.example_number", state do
-        assert "12345678" == state[:un001_metadata].toll_free.example_number
-      end
+  describe "get_for_non_geographical_region/1" do
+    test "GetInstanceLoadInternationalTollFreeMetadata", %{un001_metadata: metadata} do
+      assert RegionCodeFixture.un001() == metadata.id
+      assert 800 == metadata.country_code
+      assert "\\g{1} \\g{2}" == Enum.at(metadata.number_format, 0).format
+      assert ~r/(\d{4})(\d{4})/ == Enum.at(metadata.number_format, 0).pattern
+      assert 0 == length(metadata.general.national_possible_lengths)
+      assert 1 == length(metadata.general.possible_lengths)
+      assert "12345678" == metadata.toll_free.example_number
     end
   end
 
-  describe ".get_supported_regions/1" do
-    context "get a list of supported regions" do
-      it "should contain at least one element" do
-        assert 0 < length(get_supported_regions())
-      end
+  describe "get_supported_regions/1" do
+    test "GetSupportedRegions" do
+      supported_regions = get_supported_regions()
+
+      assert length(supported_regions) > 0
+      assert Enum.find(supported_regions, fn region_code -> region_code == RegionCodeFixture.us() end)
+      refute Enum.find(supported_regions, fn region_code -> region_code == RegionCodeFixture.un001() end)
+      refute Enum.any?(supported_regions, fn region_code -> region_code == "800" end)
     end
   end
 
-  describe ".is_supported_region?/1" do
-    context "US" do
-      it "returns true" do
-        assert is_supported_region?(RegionCodeFixture.us())
-      end
-    end
-
-    context "001" do
-      it "returns false" do
-        refute is_supported_region?(RegionCodeFixture.un001())
-      end
-
-      it "returns false for calling code" do
-        refute Enum.any?(get_supported_regions(), fn region_code -> region_code == "800" end)
-      end
+  describe "is_supported_region?/1" do
+    test "GetSupportedRegions" do
+      assert is_supported_region?(RegionCodeFixture.us())
+      refute is_supported_region?(RegionCodeFixture.un001())
     end
   end
 
-  describe ".get_supported_global_network_calling_codes/1" do
-    context "get a list of supported global network calling codes" do
-      it "contains at least one element" do
-        assert 0 < length(get_supported_global_network_calling_codes())
-      end
+  describe "get_supported_global_network_calling_codes/1" do
+    test "GetSupportedGlobalNetworkCallingCodes" do
+      supported_global_network_calling_codes = get_supported_global_network_calling_codes()
+
+      assert length(supported_global_network_calling_codes) > 0
+
+      refute Enum.any?(supported_global_network_calling_codes, fn calling_code ->
+               get_region_code_for_country_code(calling_code) == RegionCodeFixture.us()
+             end)
+
+      assert Enum.any?(supported_global_network_calling_codes, fn calling_code ->
+               calling_code == 800
+             end)
+
+      assert Enum.all?(supported_global_network_calling_codes, fn calling_code ->
+               get_region_code_for_country_code(calling_code) == RegionCodeFixture.un001()
+             end)
     end
 
-    context "test all the calling codes" do
-      it "contains all the calling codes" do
-        assert Enum.all?(get_supported_global_network_calling_codes(), fn calling_code ->
-                 get_region_code_for_country_code(calling_code) == RegionCodeFixture.un001()
-               end)
-      end
-    end
-  end
-
-  describe ".is_supported_global_network_calling_code?/1" do
-    context "US" do
-      it "returns false" do
-        refute is_supported_global_network_calling_code?(1)
-      end
-    end
-
-    context "800" do
-      it "returns true" do
-        assert is_supported_global_network_calling_code?(800)
-      end
+    test "GetSupportedCallingCodes" do
+      assert Enum.member?(get_supported_global_network_calling_codes(), 979)
     end
   end
 
-  describe ".get_region_code_for_country_code/1" do
-    context "1" do
-      it "returns correct value" do
-        assert RegionCodeFixture.us() == get_region_code_for_country_code(1)
-      end
+  describe "is_supported_global_network_calling_code?/1" do
+    test "US returns false" do
+      refute is_supported_global_network_calling_code?(1)
     end
 
-    context "44" do
-      it "returns correct value" do
-        assert RegionCodeFixture.gb() == get_region_code_for_country_code(44)
-      end
-    end
-
-    context "49" do
-      it "returns correct value" do
-        assert RegionCodeFixture.de() == get_region_code_for_country_code(49)
-      end
-    end
-
-    context "800" do
-      it "returns correct value" do
-        assert RegionCodeFixture.un001() == get_region_code_for_country_code(800)
-      end
-    end
-
-    context "979" do
-      it "returns correct value" do
-        assert RegionCodeFixture.un001() == get_region_code_for_country_code(979)
-      end
+    test "800 returns true" do
+      assert is_supported_global_network_calling_code?(800)
     end
   end
 
-  describe ".get_region_codes_for_country_code/1" do
-    context "1" do
-      it "should contains US BS" do
-        list = get_region_codes_for_country_code(1)
-        assert Enum.any?(list, &(&1 == RegionCodeFixture.us()))
-        assert Enum.any?(list, &(&1 == RegionCodeFixture.bs()))
-      end
-    end
+  describe "get_supported_calling_codes/0" do
+    test "GetSupportedCallingCodes" do
+      supported_calling_codes = get_supported_calling_codes()
 
-    context "44" do
-      it "should contains GB" do
-        list = get_region_codes_for_country_code(44)
-        assert Enum.any?(list, &(&1 == RegionCodeFixture.gb()))
-      end
-    end
+      assert length(supported_calling_codes) > 0
 
-    context "49" do
-      it "should contains DE" do
-        list = get_region_codes_for_country_code(49)
-        assert Enum.any?(list, &(&1 == RegionCodeFixture.de()))
-      end
-    end
+      assert Enum.all?(supported_calling_codes, fn calling_code ->
+               calling_code > 0 and RegionCodeFixture.zz() != get_region_code_for_country_code(calling_code)
+             end)
 
-    context "800" do
-      it "should contains 001" do
-        list = get_region_codes_for_country_code(800)
-        assert Enum.any?(list, &(&1 == RegionCodeFixture.un001()))
-      end
-    end
-
-    context "-1" do
-      it "should be empty" do
-        assert 0 == length(get_region_codes_for_country_code(-1))
-      end
+      assert length(supported_calling_codes) > length(get_supported_global_network_calling_codes())
     end
   end
 
-  describe ".get_country_code_for_region_code/1" do
-    context "US" do
-      it "returns correct value" do
-        assert 1 == get_country_code_for_region_code(RegionCodeFixture.us())
-      end
-    end
+  describe "get_supported_types_for_region/1" do
+    test "GetSupportedTypesForRegion" do
+      br_types = get_supported_types_for_region(RegionCodeFixture.br())
 
-    context "NZ" do
-      it "returns correct value" do
-        assert 64 == get_country_code_for_region_code(RegionCodeFixture.nz())
-      end
-    end
+      assert Enum.member?(br_types, PhoneNumberTypes.fixed_line())
+      refute Enum.member?(br_types, PhoneNumberTypes.mobile())
+      refute Enum.member?(br_types, PhoneNumberTypes.unknown())
 
-    context "nil" do
-      it "returns correct value" do
-        assert 0 == get_country_code_for_region_code(nil)
-      end
-    end
+      us_types = get_supported_types_for_region(RegionCodeFixture.us())
 
-    context "ZZ" do
-      it "returns correct value" do
-        assert 0 == get_country_code_for_region_code(RegionCodeFixture.zz())
-      end
-    end
+      assert Enum.member?(us_types, PhoneNumberTypes.fixed_line())
+      assert Enum.member?(us_types, PhoneNumberTypes.mobile())
+      refute Enum.member?(us_types, PhoneNumberTypes.fixed_line_or_mobile())
 
-    context "001" do
-      it "returns correct value" do
-        assert 0 == get_country_code_for_region_code(RegionCodeFixture.un001())
-      end
-    end
-
-    context "CS" do
-      it "returns correct value" do
-        assert 0 == get_country_code_for_region_code("CS")
-      end
+      zz_types = get_supported_types_for_region(RegionCodeFixture.zz())
+      assert 0 == length(zz_types)
     end
   end
 
-  describe ".get_region_code_for_number/1" do
-    context "BS" do
-      it "return correct value" do
-        assert RegionCodeFixture.bs() ==
-                 get_region_code_for_number(PhoneNumberFixture.bs_number())
-      end
-    end
+  describe "get_supported_types_for_non_geo_entity/1" do
+    test "GetSupportedTypesForNonGeoEntity" do
+      types_999 = get_supported_types_for_non_geo_entity(999)
+      assert 0 == length(types_999)
 
-    context "YT" do
-      it "return correct value" do
-        assert RegionCodeFixture.yt() ==
-                 get_region_code_for_number(PhoneNumberFixture.re_number_invalid())
-      end
-    end
-
-    context "US" do
-      it "return correct value" do
-        assert RegionCodeFixture.us() ==
-                 get_region_code_for_number(PhoneNumberFixture.us_number())
-      end
-    end
-
-    context "GB" do
-      it "return correct value" do
-        assert RegionCodeFixture.gb() ==
-                 get_region_code_for_number(PhoneNumberFixture.gb_mobile())
-      end
-    end
-
-    context "001" do
-      it "return correct value for International Toll Free" do
-        assert RegionCodeFixture.un001() ==
-                 get_region_code_for_number(PhoneNumberFixture.international_toll_free())
-      end
-
-      it "return correct value for Universal Premium Rate" do
-        assert RegionCodeFixture.un001() ==
-                 get_region_code_for_number(PhoneNumberFixture.universal_premium_rate())
-      end
+      types_979 = get_supported_types_for_non_geo_entity(979)
+      assert Enum.member?(types_979, PhoneNumberTypes.premium_rate())
+      refute Enum.member?(types_979, PhoneNumberTypes.mobile())
+      refute Enum.member?(types_979, PhoneNumberTypes.unknown())
     end
   end
 
-  describe ".get_ndd_prefix_for_region_code/2" do
-    context "US, false" do
-      it "returns the correct value" do
-        assert "1" == get_ndd_prefix_for_region_code(RegionCodeFixture.us(), false)
-      end
-    end
-
-    context "BS, false" do
-      it "returns the correct value" do
-        assert "1" == get_ndd_prefix_for_region_code(RegionCodeFixture.bs(), false)
-      end
-    end
-
-    context "NZ, false" do
-      it "returns the correct value" do
-        assert "0" == get_ndd_prefix_for_region_code(RegionCodeFixture.nz(), false)
-      end
-    end
-
-    context "A0, false" do
-      it "returns the correct value" do
-        assert "0~0" == get_ndd_prefix_for_region_code(RegionCodeFixture.ao(), false)
-      end
-    end
-
-    context "A0, true" do
-      it "returns the correct value" do
-        assert "00" == get_ndd_prefix_for_region_code(RegionCodeFixture.ao(), true)
-      end
-    end
-
-    context "empty, false" do
-      it "returns the correct value" do
-        refute get_ndd_prefix_for_region_code("", false)
-      end
-    end
-
-    context "ZZ, false" do
-      it "returns the correct value" do
-        refute get_ndd_prefix_for_region_code(RegionCodeFixture.zz(), false)
-      end
-    end
-
-    context "UN001, false" do
-      it "returns the correct value" do
-        refute get_ndd_prefix_for_region_code(RegionCodeFixture.un001(), false)
-      end
-    end
-
-    context "CS, false" do
-      it "returns the correct value" do
-        refute get_ndd_prefix_for_region_code(RegionCodeFixture.cs(), false)
-      end
+  describe "get_region_code_for_country_code/1" do
+    test "GetRegionCodeForCountryCode" do
+      assert RegionCodeFixture.us() == get_region_code_for_country_code(1)
+      assert RegionCodeFixture.gb() == get_region_code_for_country_code(44)
+      assert RegionCodeFixture.de() == get_region_code_for_country_code(49)
+      assert RegionCodeFixture.un001() == get_region_code_for_country_code(800)
+      assert RegionCodeFixture.un001() == get_region_code_for_country_code(979)
     end
   end
 
-  describe ".is_nanpa_country?/1" do
-    context "US" do
-      it "returns true" do
-        assert is_nanpa_country?(RegionCodeFixture.us())
-      end
+  describe "get_region_code_for_number/1" do
+    test "IsValidForRegion" do
+      assert RegionCodeFixture.yt() ==
+               get_region_code_for_number(PhoneNumberFixture.re_number_invalid())
     end
 
-    context "BS" do
-      it "returns true" do
-        assert is_nanpa_country?(RegionCodeFixture.bs())
-      end
+    test "RegionCodeForNumber" do
+      assert RegionCodeFixture.bs() == get_region_code_for_number(PhoneNumberFixture.bs_number())
+      assert RegionCodeFixture.us() == get_region_code_for_number(PhoneNumberFixture.us_number())
+      assert RegionCodeFixture.gb() == get_region_code_for_number(PhoneNumberFixture.gb_mobile())
+      assert RegionCodeFixture.un001() == get_region_code_for_number(PhoneNumberFixture.international_toll_free())
+      assert RegionCodeFixture.un001() == get_region_code_for_number(PhoneNumberFixture.universal_premium_rate())
     end
+  end
 
-    context "DE" do
-      it "returns false" do
-        refute is_nanpa_country?(RegionCodeFixture.de())
-      end
+  describe "get_region_codes_for_country_code/1" do
+    test "GetRegionCodesForCountryCode" do
+      region_codes_for_nanpa = get_region_codes_for_country_code(1)
+      assert Enum.member?(region_codes_for_nanpa, RegionCodeFixture.us())
+      assert Enum.member?(region_codes_for_nanpa, RegionCodeFixture.bs())
+
+      region_codes_gb = get_region_codes_for_country_code(44)
+      assert Enum.member?(region_codes_gb, RegionCodeFixture.gb())
+
+      region_codes_de = get_region_codes_for_country_code(49)
+      assert Enum.member?(region_codes_de, RegionCodeFixture.de())
+
+      region_codes_un001 = get_region_codes_for_country_code(800)
+      assert Enum.member?(region_codes_un001, RegionCodeFixture.un001())
+
+      assert Enum.empty?(get_region_codes_for_country_code(-1))
     end
+  end
 
-    context "ZZ" do
-      it "returns false" do
-        refute is_nanpa_country?(RegionCodeFixture.zz())
-      end
+  describe "get_country_code_for_region_code/1" do
+    test "GetCountryCodeForRegion" do
+      assert 1 == get_country_code_for_region_code(RegionCodeFixture.us())
+      assert 64 == get_country_code_for_region_code(RegionCodeFixture.nz())
+      assert 0 == get_country_code_for_region_code(nil)
+      assert 0 == get_country_code_for_region_code(RegionCodeFixture.zz())
+      assert 0 == get_country_code_for_region_code(RegionCodeFixture.un001())
+      assert 0 == get_country_code_for_region_code("CS")
     end
+  end
 
-    context "UN001" do
-      it "returns false" do
-        refute is_nanpa_country?(RegionCodeFixture.un001())
-      end
+  describe "get_ndd_prefix_for_region_code/2" do
+    test "GetNationalDiallingPrefixForRegion" do
+      assert "1" == get_ndd_prefix_for_region_code(RegionCodeFixture.us(), false)
+      assert "1" == get_ndd_prefix_for_region_code(RegionCodeFixture.bs(), false)
+      assert "0" == get_ndd_prefix_for_region_code(RegionCodeFixture.nz(), false)
+      assert "0~0" == get_ndd_prefix_for_region_code(RegionCodeFixture.ao(), false)
+      assert "00" == get_ndd_prefix_for_region_code(RegionCodeFixture.ao(), true)
+      assert is_nil(get_ndd_prefix_for_region_code("", false))
+      assert is_nil(get_ndd_prefix_for_region_code(RegionCodeFixture.zz(), false))
+      assert is_nil(get_ndd_prefix_for_region_code(RegionCodeFixture.un001(), false))
+      assert is_nil(get_ndd_prefix_for_region_code(RegionCodeFixture.cs(), false))
     end
+  end
 
-    context "nil" do
-      it "returns false" do
-        refute is_nanpa_country?(nil)
-      end
+  describe "is_nanpa_country?/1" do
+    test "IsNANPACountry" do
+      assert is_nanpa_country?(RegionCodeFixture.us())
+      assert is_nanpa_country?(RegionCodeFixture.bs())
+      refute is_nanpa_country?(RegionCodeFixture.de())
+      refute is_nanpa_country?(RegionCodeFixture.zz())
+      refute is_nanpa_country?(RegionCodeFixture.un001())
+      refute is_nanpa_country?(nil)
     end
   end
 end
