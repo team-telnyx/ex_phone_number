@@ -13,14 +13,25 @@ defmodule ExPhoneNumber.Constants.Values do
 
   def colombia_mobile_to_fixed_line_prefix(), do: "3"
 
+  def mobile_token_mappings, do: %{54 => "9"}
+
   def geo_mobile_countries(),
+    do:
+      [
+        # Mexico
+        52,
+        # Argentina
+        54,
+        # Brazil
+        55,
+        # Indonesia
+        62
+      ] ++ geo_mobile_countries_without_mobile_area_codes()
+
+  def geo_mobile_countries_without_mobile_area_codes,
     do: [
-      # Mexico
-      52,
-      # Argentina
-      54,
-      # Brazil
-      55
+      # China
+      88
     ]
 
   def plus_sign(), do: "+"

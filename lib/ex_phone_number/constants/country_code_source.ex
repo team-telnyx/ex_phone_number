@@ -6,4 +6,6 @@ defmodule ExPhoneNumber.Constants.CountryCodeSource do
   def from_number_without_plus_sign(), do: :from_number_without_plus_sign
 
   def from_default_country(), do: :from_default_country
+
+  def unspecified(), do: :unspecified
 end
