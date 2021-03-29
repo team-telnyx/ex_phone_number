@@ -93,7 +93,7 @@ defmodule ExPhoneNumber.MetadataTest do
       assert 800 == metadata.country_code
       assert "\\g{1} \\g{2}" == Enum.at(metadata.number_format, 0).format
       assert ~r/(\d{4})(\d{4})/ == Enum.at(metadata.number_format, 0).pattern
-      assert 0 == length(metadata.general.national_possible_lengths)
+      assert Enum.empty?(metadata.general.national_possible_lengths)
       assert 1 == length(metadata.general.possible_lengths)
       assert "12345678" == metadata.toll_free.example_number
     end
@@ -180,14 +180,14 @@ defmodule ExPhoneNumber.MetadataTest do
       refute Enum.member?(us_types, PhoneNumberTypes.fixed_line_or_mobile())
 
       zz_types = get_supported_types_for_region(RegionCodeFixture.zz())
-      assert 0 == length(zz_types)
+      assert Enum.empty?(zz_types)
     end
   end
 
   describe "get_supported_types_for_non_geo_entity/1" do
     test "GetSupportedTypesForNonGeoEntity" do
       types_999 = get_supported_types_for_non_geo_entity(999)
-      assert 0 == length(types_999)
+      assert Enum.empty?(types_999)
 
       types_979 = get_supported_types_for_non_geo_entity(979)
       assert Enum.member?(types_979, PhoneNumberTypes.premium_rate())
@@ -212,7 +212,7 @@ defmodule ExPhoneNumber.MetadataTest do
                get_region_code_for_number(PhoneNumberFixture.re_number_invalid())
     end
 
-    test "RegionCodeForNumber" do
+    test "GetRegionCodeForNumber" do
       assert RegionCodeFixture.bs() == get_region_code_for_number(PhoneNumberFixture.bs_number())
       assert RegionCodeFixture.us() == get_region_code_for_number(PhoneNumberFixture.us_number())
       assert RegionCodeFixture.gb() == get_region_code_for_number(PhoneNumberFixture.gb_mobile())

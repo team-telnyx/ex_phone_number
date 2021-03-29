@@ -45,6 +45,7 @@ defmodule ExPhoneNumber.Parsing do
     end
   end
 
+  @spec parse(String.t(), String.t()) :: {:ok, %PhoneNumber{}} | {:error, String.t()}
   def parse(number_to_parse, default_region) do
     parse_helper(number_to_parse, default_region, false, true)
   end
@@ -154,7 +155,7 @@ defmodule ExPhoneNumber.Parsing do
           case maybe_strip_national_prefix_and_carrier_code(normalized_national_number, metadata) do
             {true, carrier_code, potential_national_number} ->
               national_number =
-                if is_valid_possible_number_length?(
+                if not is_shorter_than_possible_normal_number?(
                      metadata,
                      potential_national_number
                    ),

@@ -157,6 +157,7 @@ defmodule ExPhoneNumber.Metadata do
     end
   end
 
+  @spec get_region_code_for_number(%PhoneNumber{} | nil) :: String.t() | nil
   def get_region_code_for_number(nil), do: nil
 
   def get_region_code_for_number(%PhoneNumber{} = phone_number) do
@@ -247,6 +248,7 @@ defmodule ExPhoneNumber.Metadata do
     end
   end
 
+  @spec is_nanpa_country?(String.t() | nil) :: boolean()
   def is_nanpa_country?(nil), do: false
 
   def is_nanpa_country?(region_code) when is_binary(region_code) do

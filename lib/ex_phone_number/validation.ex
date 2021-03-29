@@ -104,6 +104,10 @@ defmodule ExPhoneNumber.Validation do
     )
   end
 
+  def is_shorter_than_possible_normal_number?(metadata, number) do
+    test_number_length(number, metadata) == ValidationResults.too_short()
+  end
+
   def is_valid_number?(%PhoneNumber{} = number) do
     region_code = Metadata.get_region_code_for_number(number)
     is_valid_number_for_region?(number, region_code)
