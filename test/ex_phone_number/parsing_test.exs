@@ -240,6 +240,13 @@ defmodule ExPhoneNumber.ParsingTest do
       assert PhoneNumberFixture.us_local_number() == phone_number
     end
 
+    test "ParseNationalNumber - Short code leading zero" do
+      {result, phone_number} = parse("0123456", RegionCodeFixture.gb())
+
+      assert :ok == result
+      assert PhoneNumberFixture.gb_short_number_with_leading_zero() == phone_number
+    end
+
     test "ParseNationalNumberArgentina - AR numbers should return correct value #1" do
       {result, phone_number} = parse("+54 9 343 555 1212", RegionCodeFixture.ar())
 

@@ -326,6 +326,14 @@ defmodule ExPhoneNumber.PhoneNumberFixture do
     }
   end
 
+  def gb_short_number_with_leading_zero() do
+    %PhoneNumber{
+      country_code: 44,
+      national_number: 123_456,
+      italian_leading_zero: true
+    }
+  end
+
   def gb_number2() do
     %PhoneNumber{
       country_code: 44,

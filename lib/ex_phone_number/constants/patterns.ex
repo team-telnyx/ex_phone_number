@@ -77,8 +77,7 @@ defmodule ExPhoneNumber.Constants.Patterns do
     possible_chars_after_ext_label = "[:\\.\uFF0E]?[ \u00A0\\t,-]*"
     optional_extn_suffix = "#?"
 
-    explicit_ext_labels =
-      "(?:e?xt(?:ensi(?:o\u0301?|\u00F3))?n?|\uFF45?\uFF58\uFF54\uFF4E?|\u0434\u043E\u0431|anexo)"
+    explicit_ext_labels = "(?:e?xt(?:ensi(?:o\u0301?|\u00F3))?n?|\uFF45?\uFF58\uFF54\uFF4E?|\u0434\u043E\u0431|anexo)"
 
     ambiguous_ext_labels = "(?:[x\uFF58#\uFF03~\uFF5E]|int|\uFF49\uFF4E\uFF54)"
 
