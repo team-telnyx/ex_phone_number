@@ -32,7 +32,7 @@ defmodule ExPhoneNumber.Mixfile do
 
   defp deps do
     [
-      {:sweet_xml, "~> 0.6.6"},
+      {:sweet_xml, "~> 0.7"},
       {:dialyxir, "~> 1.1", only: :dev, runtime: false},
       {:ex_doc, "~> 0.22.0", only: :dev, runtime: false},
       {:excoveralls, "~> 0.14", only: :test},
