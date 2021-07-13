@@ -224,4 +224,35 @@ defmodule ExPhoneNumber.ValidationTest do
       refute is_alpha_number("+800 1234-1234")
     end
   end
+
+  describe ".get_length_of_geographical_area_code/1" do
+    test "GetLengthOfGeographicalAreaCode" do
+      assert 3 == get_length_of_geographical_area_code(PhoneNumberFixture.us_number())
+      assert 0 == get_length_of_geographical_area_code(PhoneNumberFixture.us_tollfree())
+      assert 2 == get_length_of_geographical_area_code(PhoneNumberFixture.gb_number())
+      assert 0 == get_length_of_geographical_area_code(PhoneNumberFixture.gb_mobile())
+      assert 2 == get_length_of_geographical_area_code(PhoneNumberFixture.ar_number())
+      assert 1 == get_length_of_geographical_area_code(PhoneNumberFixture.au_number())
+      assert 2 == get_length_of_geographical_area_code(PhoneNumberFixture.it_number())
+      assert 0 == get_length_of_geographical_area_code(PhoneNumberFixture.sg_number())
+      assert 0 == get_length_of_geographical_area_code(PhoneNumberFixture.us_short_by_one_number())
+      assert 0 == get_length_of_geographical_area_code(PhoneNumberFixture.international_toll_free())
+    end
+  end
+
+  describe ".get_length_of_national_destination_code/1" do
+    test "GetLengthOfNationalDestinationCode" do
+      assert 3 == get_length_of_national_destination_code(PhoneNumberFixture.us_number())
+      assert 3 == get_length_of_national_destination_code(PhoneNumberFixture.us_tollfree())
+      assert 2 == get_length_of_national_destination_code(PhoneNumberFixture.gb_number())
+      assert 4 == get_length_of_national_destination_code(PhoneNumberFixture.gb_mobile())
+      assert 2 == get_length_of_national_destination_code(PhoneNumberFixture.ar_number())
+      assert 3 == get_length_of_national_destination_code(PhoneNumberFixture.ar_mobile())
+      assert 1 == get_length_of_national_destination_code(PhoneNumberFixture.au_number())
+      assert 4 == get_length_of_national_destination_code(PhoneNumberFixture.sg_number())
+      assert 0 == get_length_of_national_destination_code(PhoneNumberFixture.us_short_by_one_number())
+      assert 0 == get_length_of_national_destination_code(PhoneNumberFixture.invalid_country_calling_code())
+      assert 4 == get_length_of_national_destination_code(PhoneNumberFixture.international_toll_free())
+    end
+  end
 end

@@ -752,4 +752,11 @@ defmodule ExPhoneNumber.PhoneNumberFixture do
       number_of_leading_zeros: -3
     }
   end
+
+  def invalid_country_calling_code() do
+    %PhoneNumber{
+      country_code: 123,
+      national_number: 6_502_530_000
+    }
+  end
 end

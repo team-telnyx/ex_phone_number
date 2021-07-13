@@ -2,12 +2,78 @@ defmodule ExPhoneNumber.Validation do
   import ExPhoneNumber.Utilities
   alias ExPhoneNumber.Constants.ErrorMessages
   alias ExPhoneNumber.Constants.Patterns
+  alias ExPhoneNumber.Constants.PhoneNumberFormats
   alias ExPhoneNumber.Constants.PhoneNumberTypes
   alias ExPhoneNumber.Constants.ValidationResults
   alias ExPhoneNumber.Constants.Values
+  alias ExPhoneNumber.Formatting
   alias ExPhoneNumber.Metadata
   alias ExPhoneNumber.Metadata.PhoneMetadata
   alias ExPhoneNumber.Model.PhoneNumber
+
+  @doc """
+  Gets the length of the geographical area code from the
+  national_number field of the PhoneNumber object passed in, so that
+  clients could use it to split a national significant number into geographical
+  area code and subscriber number.
+
+  Implements `i18n.phonenumbers.PhoneNumberUtil.prototype.getLengthOfGeographicalAreaCode`
+  """
+  @spec get_length_of_geographical_area_code(%PhoneNumber{}) :: integer()
+  def get_length_of_geographical_area_code(phone_number) do
+    phone_metadata =
+      phone_number
+      |> Metadata.get_region_code_for_number()
+      |> Metadata.get_for_region_code()
+
+    cond do
+      is_nil(phone_metadata) -> 0
+      not PhoneMetadata.has_national_prefix?(phone_metadata) and not PhoneNumber.has_italian_leading_zero?(phone_number) -> 0
+      not is_number_geographical?(phone_number) -> 0
+      true -> get_length_of_national_destination_code(phone_number)
+    end
+  end
+
+  @doc """
+  Gets the length of the national destination code (NDC) from the PhoneNumber
+  object passed in, so that clients could use it to split a national
+  significant number into NDC and subscriber number.
+
+  Implements `i18n.phonenumbers.PhoneNumberUtil.prototype.getLengthOfNationalDestinationCode`
+  """
+  @spec get_length_of_national_destination_code(%PhoneNumber{}) :: integer()
+  def get_length_of_national_destination_code(phone_number) do
+    working_phone_number =
+      if PhoneNumber.has_extension?(phone_number) do
+        PhoneNumber.clear_extension(phone_number)
+      else
+        phone_number
+      end
+
+    national_significant_number = Formatting.format(working_phone_number, PhoneNumberFormats.international())
+    number_groups = String.split(national_significant_number, Patterns.non_digits_pattern())
+
+    updated_number_groups =
+      if String.length(List.first(number_groups)) == 0 do
+        [_head | list] = number_groups
+        list
+      else
+        number_groups
+      end
+
+    mobile_token = Metadata.get_country_mobile_token(phone_number.country_code)
+
+    cond do
+      length(updated_number_groups) <= 2 ->
+        0
+
+      get_number_type(phone_number) == PhoneNumberTypes.mobile() and mobile_token != "" ->
+        String.length(Enum.at(updated_number_groups, 2)) + String.length(mobile_token)
+
+      true ->
+        String.length(Enum.at(updated_number_groups, 1))
+    end
+  end
 
   def get_number_type(%PhoneNumber{} = phone_number) do
     region_code = Metadata.get_region_code_for_number(phone_number)

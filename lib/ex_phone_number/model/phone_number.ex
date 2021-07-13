@@ -22,18 +22,27 @@ defmodule ExPhoneNumber.Model.PhoneNumber do
   alias ExPhoneNumber.Model.PhoneNumber
   alias ExPhoneNumber.Constants.CountryCodeSource
 
+  @spec clear_extension(%PhoneNumber{}) :: %PhoneNumber{}
+  def clear_extension(phone_number = %PhoneNumber{}) do
+    %PhoneNumber{phone_number | extension: nil}
+  end
+
+  @spec has_country_code?(%PhoneNumber{}) :: boolean()
   def has_country_code?(phone_number = %PhoneNumber{}) do
     not is_nil(phone_number.country_code)
   end
 
+  @spec has_national_number?(%PhoneNumber{}) :: boolean()
   def has_national_number?(phone_number = %PhoneNumber{}) do
     not is_nil(phone_number.national_number)
   end
 
+  @spec has_extension?(%PhoneNumber{}) :: boolean()
   def has_extension?(phone_number = %PhoneNumber{}) do
     not is_nil(phone_number.extension)
   end
 
+  @spec has_italian_leading_zero?(%PhoneNumber{}) :: boolean()
   def has_italian_leading_zero?(phone_number = %PhoneNumber{}) do
     not is_nil(phone_number.italian_leading_zero)
   end
@@ -47,10 +56,12 @@ defmodule ExPhoneNumber.Model.PhoneNumber do
     end
   end
 
+  @spec has_number_of_leading_zeros?(%PhoneNumber{}) :: boolean()
   def has_number_of_leading_zeros?(phone_number = %PhoneNumber{}) do
     not is_nil(phone_number.number_of_leading_zeros)
   end
 
+  @spec has_raw_input?(%PhoneNumber{}) :: boolean()
   def has_raw_input?(phone_number = %PhoneNumber{}) do
     not is_nil(phone_number.raw_input)
   end
@@ -64,10 +75,12 @@ defmodule ExPhoneNumber.Model.PhoneNumber do
     end
   end
 
+  @spec has_country_code_source?(%PhoneNumber{}) :: boolean()
   def has_country_code_source?(phone_number = %PhoneNumber{}) do
     not is_nil(phone_number.country_code_source)
   end
 
+  @spec has_preferred_domestic_carrier_code?(%PhoneNumber{}) :: boolean()
   def has_preferred_domestic_carrier_code?(phone_number = %PhoneNumber{}) do
     not is_nil(phone_number.preferred_domestic_carrier_code)
   end
