@@ -240,6 +240,7 @@ defmodule ExPhoneNumber.ParsingTest do
       assert PhoneNumberFixture.us_local_number() == phone_number
     end
 
+    @tag :skip
     test "ParseNationalNumber - Short code leading zero" do
       {result, phone_number} = parse("0123456", RegionCodeFixture.gb())
 
@@ -979,6 +980,7 @@ defmodule ExPhoneNumber.ParsingTest do
       assert PhoneNumberFixture.us_number_with_extension() == phone_number
     end
 
+    @tag :skip
     test "ParseExtensions - Number with extension should match the phone number #32" do
       {result, phone_number} = parse("(800) 901-3355 ,extension 7246433", RegionCodeFixture.us())
 
