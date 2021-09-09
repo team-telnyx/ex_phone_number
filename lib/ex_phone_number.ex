@@ -6,6 +6,9 @@ defmodule ExPhoneNumber do
   def get_number_type(%ExPhoneNumber.Model.PhoneNumber{} = phone_number),
     do: ExPhoneNumber.Validation.get_number_type(phone_number)
 
+  def get_region_code_for_number(%ExPhoneNumber.Model.PhoneNumber{} = phone_number),
+    do: ExPhoneNumber.Metadata.get_region_code_for_number(phone_number)
+
   def is_possible_number?(%ExPhoneNumber.Model.PhoneNumber{} = phone_number),
     do: ExPhoneNumber.Validation.is_possible_number?(phone_number)
 
